@@ -1,100 +1,12 @@
 #include "MainScene.h"
+#include "UILayer.h"
 #include "SnowLayer.h"
+#include "StageLayer.h"
 #include "Utility.h"
 
 USING_NS_CC;
 
-const char* bgFiles[] = {
-    "SnowWalkerSky.png",    // bgSky
-    "SnowWalkerCloudBack.png",    // bgCloudBack
-    "SnowWalkerCloudFront.png",    // bgCloudFront
-    "SnowWalkerCity.png",    // bgCity
-    "SnowWalkerRiver.png",    // bgRiver
-    "SnowWalkerBank.png",    // bgBank
-    "SnowWalkerField.png",    // bgField
-    "SnowWalkerLifeFrame.png", // bgUILifeFrame
-    "SnowWalkerLifeGauge.png", // bgUILifeGauge
-    "SnowWalkerLifeWarning.png", // bgUILifeWarning
-    "SnowWalkerProgress.png", // bgUIProgress
-    "SnowWalkerUIUnder.png"    // bgUIUnder    
-};
-
-enum Buttons {
-    ButtonSlow,
-    ButtonJump,
-    ButtonDash,
-    ButtonDrink,
-    ButtonNum
-};
-
-Point buttonPositions[] = {
-    Point(64, 160),
-    Point(135, 256),
-    Point(196, 160),
-    Point(400, 200)
-};
-
-const Point bgUVs[] = {
-    Point(0.5f, 1),    // bgSky
-    Point(0.5f, 1),    // bgCloudBack
-    Point(0.5f, 1),    // bgCloudFront
-    Point(0.5f, 0.5f),    // bgCity
-    Point(0.5f, 0.5f),    // bgRiver
-    Point(0.5f, 0.5f),    // bgBank
-    Point(0.5f, 0),    // bgField
-    Point(0.5f, 0.5f), // bgUILifeFrame
-    Point(0.0f, 0.5f), // bgUILifeGauge
-    Point(0.5f, 0.5f), // bgUILifeWarning
-    Point(0.5f, 0.5f), // bgUIProgress
-    Point(0.5f, 0)    // bgUIUnder
-};
-
-const Point bgPositions[] = {
-    Point(0, 1136),    // bgSky
-    Point(0, 1136),    // bgCloudBack
-    Point(0, 1136),    // bgCloudFront
-    Point(0, 920),    // bgCity
-    Point(0, 600),    // bgRiver
-    Point(0, 760),    // bgBank
-    Point(0, 80),    // bgField
-    Point(0, 1024), // bgUILifeFrame
-    Point(-309, 1024), // bgUILifeGauge
-    Point(128, 1034), // bgUILifeWarning
-    Point(0, 960), // bgUIProgress
-    Point(0, 0)    // bgUIUnder    
-};
-
-const float bgScrlSpds[] = {
-    4,    // bgSky
-    32,    // bgCloudBack
-    48,    // bgCloudFront
-    64,    // bgCity
-    160,    // bgRiver
-    120,    // bgBank
-    240,    // bgField
-    0,  // bgUILifeFrame
-    0,  // bgUILifeGauge
-    0,  // bgUILifeWarning
-    0,  // bgUIProgress
-    0    // bgUIUnder    
-};
-
-const float bgDepth[] = {
-    0,    // bgSky
-    0,    // bgCloudBack
-    0,    // bgCloudFront
-    0,    // bgCity
-    0,    // bgRiver
-    0,    // bgBank
-    0,    // bgField
-    50,  // bgUILifeFrame
-    50,  // bgUILifeGauge
-    50,  // bgUILifeWarning
-    50,  // bgUIProgress
-    50    // bgUIUnder    
-};
-
-float plHeight = 480;
+float plHeight = 380;
 float lifeMax = 200;
 float life1st = 100;
 float dranker = 145;
@@ -112,10 +24,7 @@ float iceAppSecMin = 30.0f;
 float iceAppSecMax = 40.0f;
 
 float distGoal = 3000;
-
-inline float Rand0to1() {
-    return (rand() % 10000) / 10000.f;
-}
+float scrlSpd = 240;
 
 MainScene* MainScene::instance = NULL;
 
@@ -141,14 +50,15 @@ bool MainScene::init()
 
     life = life1st;
 
+    touchType = touch::None;
+
     scrlRate = 1;
-    holdButton = ButtonNum;
 
     snowManAppSecCount = 0;
-    snowManAppSec = snowManAppSecMin + (snowManAppSecMax - snowManAppSecMin) * Rand0to1();
+    snowManAppSec = snowManAppSecMin + (snowManAppSecMax - snowManAppSecMin) * utRand(1.f);
 
     iceAppSecCount = 0;
-    iceAppSec = iceAppSecMin + (iceAppSecMax - iceAppSecMin) * Rand0to1();
+    iceAppSec = iceAppSecMin + (iceAppSecMax - iceAppSecMin) * utRand(1.f);
 
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
@@ -168,56 +78,24 @@ bool MainScene::init()
     menu->setPosition(Point::ZERO);
     this->addChild(menu, 1);
 
-    /////////////////////////////
-    // 3. add your codes below...
+    // ステージの生成
+    stageLayer = StageLayer::create();
+    this->addChild(stageLayer, 20);
 
-    // add a label shows "Hello World"
-    // create and initialize a label
-    
-    scoreLabel = LabelTTF::create("Hello World", "Arial", 24);
-    
-    // position the label on the center of the screen
-    scoreLabel->setPosition(Point(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - scoreLabel->getContentSize().height));
-
-    // add the label as a child to this layer
-    this->addChild(scoreLabel, 1);
-/*
-    // add "MainScene" splash screen"
-    auto sprite = Sprite::create("MainScene.png");
-
-    // position the sprite on the center of the screen
-    sprite->setPosition(Point(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    // add the sprite as a child to this layer
-    this->addChild(sprite, 0);
-*/
-    for(int i = 0; i < bgNum; ++i) {
-        Point pos = bgPositions[i];
-        pos.x += visibleSize.width/2 + origin.x;
-        bgSprites[i] = Sprite::create(bgFiles[i]);
-        bgSprites[i]->setPosition(pos);
-        bgSprites[i]->setAnchorPoint(bgUVs[i]);
-        auto sprite = Sprite::create(bgFiles[i]);
-        sprite->setAnchorPoint(Point(0, 0));
-        sprite->setPosition(Point(640, 0));
-        bgSprites[i]->addChild(sprite, 0);
-        this->addChild(bgSprites[i], bgDepth[i]);
-    }
-
-    snowLayer = SnowLayer::create();
-    this->addChild(snowLayer, 25);
-    snowLayer->Setting(Point(-640 / 3, -1136 / 2), 0.01f);
-
-    progIconSprite = Sprite::create("SnowWalkerProgressIcon.png");
-    progIconSprite->setAnchorPoint(Point(0.5f,0));
-    progIconSprite->setPosition(Point(visibleSize.width/2 - 302, bgPositions[bgUIProgress].y));
-    this->addChild(progIconSprite, bgDepth[bgUIProgress]);
-
+    // プレイヤーの生成
     playerSprite = Sprite::create("SnowWalkerPlayer.png");
     playerSprite->setAnchorPoint(Point(0.5f,0));
     playerSprite->setPosition(Point(320, plHeight));
-    this->addChild(playerSprite, 5);
+    this->addChild(playerSprite, 30);
+
+    // 降雪の生成
+    snowLayer = SnowLayer::create();
+    this->addChild(snowLayer, 40);
+    snowLayer->Setting(Point(-640 / 3, -1136 / 2), 0.01f);
+
+    // UIの生成
+    uiLayer = UILayer::create();
+    this->addChild(uiLayer, 50);
 
     schedule(schedule_selector(MainScene::Update));
 
@@ -225,28 +103,23 @@ bool MainScene::init()
 //    listener->setSwallowTouches(true);
 
     listener->onTouchesBegan = [](const Touches& touches, Event* event) {
-        MainScene::Get()->onTouchesBegan(touches, event);
+        MainScene::Get()->onTouches(touches, event, touch::Began);
     };
 
     listener->onTouchesMoved = [](const Touches& touches, Event* event) {
-        MainScene::Get()->onTouchesMoved(touches, event);
+        MainScene::Get()->onTouches(touches, event, touch::Moved);
     };
 
     listener->onTouchesEnded = [](const Touches& touches, Event* event) {
-        MainScene::Get()->onTouchesEnded(touches, event);
+        MainScene::Get()->onTouches(touches, event, touch::Ended);
     };
 
     listener->onTouchesCancelled = [](const Touches& touches, Event* event) {
-        MainScene::Get()->onTouchesCancelled(touches, event);
+        MainScene::Get()->onTouches(touches, event, touch::Cancelled);
     };
 
     getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
-//    EventDispatcher::getInstance()->addEventListenerWithSceneGraphPriority(listener, playerSprite);
 
-
-    // 画面サイズの取得
-    Size size = Director::getInstance()->getWinSize();
-    
     // 描画用ノードの作成
     debugDrawNode = DrawNode::create();
     this->addChild(debugDrawNode, 100);
@@ -263,51 +136,36 @@ void MainScene::onEnter() {
 void MainScene::onExit() {
 }   
 
-void MainScene::onTouchesBegan(const Touches& touches, Event* event) {
+void MainScene::onTouches(const Touches& touches, Event* event, touch::Type type) {
+    touchType = type;
+
     for(int touchIdx = 0; touchIdx < touches.size(); ++touchIdx) {
         Touch* touch = touches[touchIdx];
-        Point location = touch->getLocation();
-    //    log("location %f %f", location.x, location.y);
-        for(int i = 0; i < ButtonNum; ++i) {
-            Point vec = location - buttonPositions[i];
-            float dist = vec.getLength();
-            if(dist < 64) {
-                if(holdButton != i) {
-                    holdButton = i;
-                    switch(holdButton) {
-                    case ButtonDash:
-                        break;
-                    case ButtonJump:
-                        if(plPosY == 0) {
-                            jumpSpeed = plJumpAccel;
-                        }
-                        break;
-                    case ButtonDrink:
-                        life += lifeGainDrink;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
+        buttonType = uiLayer->CheckTouch(touchType, touch->getLocation());
+        if(buttonType != button::None)
+            break;
     }
-}
-
-void MainScene::onTouchesMoved(const Touches& touches, Event* event) {
-
-}
-
-void MainScene::onTouchesEnded(const Touches& touches, Event* event) {
-
-}
-
-void MainScene::onTouchesCancelled(const Touches& touches, Event* event) {
-
 }
 
 void MainScene::Update(float deltaTime) {
     debugDrawNode->clear();
     snowLayer->Update(deltaTime);
+
+    switch(buttonType) {
+    case button::Dash:
+        break;
+    case button::Jump:
+        if(plPosY == 0) {
+            jumpSpeed = plJumpAccel;
+        }
+        break;
+    case button::Drink:
+        life += lifeGainDrink;
+        break;
+            
+        default:
+            break;
+    }
 
     switch(state) {
     case StateTitle:
@@ -317,42 +175,40 @@ void MainScene::Update(float deltaTime) {
     case StateGame:
         UpdateGame(deltaTime);
         break;
+            
+        default:
+            break;
     }
+
+    touchType = touch::None;
+    buttonType = button::None;
 }
 
 void MainScene::UpdateTitle(float deltaTime) {
-
+    if(touchType == touch::Began)
+        BeginState(StateGame);
 }
 
 void MainScene::UpdateGame(float deltaTime) {
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-
-    for(int i = 0; i < bgNum; ++i) {
-        Point pos = bgSprites[i]->getPosition();
-        pos.x -= bgScrlSpds[i] * scrlRate * deltaTime;
-        if(pos.x < -320)
-            pos.x += 640;
-        pos.y = bgPositions[i].y;
-        bgSprites[i]->setPosition(pos);
-    }
-
     Point plPos(160,plHeight+plPosY);
     Point plColliPos(plPos + Point(0, 16));
 
-    distProg += bgScrlSpds[bgField] * scrlRate * deltaTime * (1/64.f);
+    distProg += scrlSpd * scrlRate * deltaTime * (1/64.f);
+
+    stageLayer->SetScrollSpeed(scrlRate);
+    stageLayer->Update(deltaTime);
 
     debugDrawNode->drawDot(plColliPos, 32, Color4F(0,1,0,0.5f));
     playerSprite->setPosition(plPos);
 
-    Point iconPos(visibleSize.width/2 - 302 + 604 * (distProg / distGoal), bgPositions[bgUIProgress].y);
-    progIconSprite->setPosition(iconPos);
-
     bool hit = false;
+
+    // 雪だるまの衝突判定
     std::vector<Sprite*>::iterator itr = snowManSprites.begin();
     while(itr != snowManSprites.end()) {
         Sprite* sprite = (*itr);
         Point pos = sprite->getPosition();
-        pos.x -= bgScrlSpds[bgField] * scrlRate * deltaTime;
+        pos.x -= scrlSpd * scrlRate * deltaTime;
         sprite->setPosition(pos);
      
         Point colliPosBottom = pos + Point(0,16);
@@ -385,7 +241,7 @@ void MainScene::UpdateGame(float deltaTime) {
         float rate = 1 - (record / (60 * 60 * 3));
 
         snowManAppSecCount = 0;        
-        snowManAppSec = (snowManAppSecMin + (snowManAppSecMax - snowManAppSecMin) * Rand0to1()) * rate;        
+        snowManAppSec = (snowManAppSecMin + (snowManAppSecMax - snowManAppSecMin) * utRand(1.f)) * rate;
 
         Sprite *sprite = Sprite::create("SnowWalkerSnowManM.png");
         sprite->retain();
@@ -395,16 +251,17 @@ void MainScene::UpdateGame(float deltaTime) {
         snowManSprites.push_back(sprite);
     }
 
+    // 氷の衝突判定
     itr = iceSprites.begin();
     while(itr != iceSprites.end()) {
         Sprite* sprite = (*itr);
         Point pos = sprite->getPosition();
-        pos.x -= bgScrlSpds[bgField] * scrlRate * deltaTime;
+        pos.x -= scrlSpd * scrlRate * deltaTime;
         sprite->setPosition(pos);
         sprite->setScale(0.5f);
      
         if(fabsf(plPos.x - pos.x) < 128 && plPosY == 0) {   // xが範囲内で着地中か？
-            if(holdButton != ButtonSlow)
+            if(buttonType != button::Slow)
                 hit = true;
         }
 
@@ -421,7 +278,7 @@ void MainScene::UpdateGame(float deltaTime) {
         float rate = 1 - (record / (60 * 60 * 3));
 
         iceAppSecCount = 0;        
-        iceAppSec = (iceAppSecMin + (iceAppSecMax - iceAppSecMin) * Rand0to1()) * rate;        
+        iceAppSec = (iceAppSecMin + (iceAppSecMax - iceAppSecMin) * utRand(1.f)) * rate;
 
         Sprite *sprite = Sprite::create("SnowWalkerIce.png");
         sprite->retain();
@@ -439,8 +296,8 @@ void MainScene::UpdateGame(float deltaTime) {
         jumpSpeed = 0;
     }
 
-    switch(holdButton) {
-    case ButtonSlow:
+    switch(buttonType) {
+    case button::Slow:
         scrlRate = 0.5f;
         life -= lifeDownWalk * deltaTime;
         break; 
@@ -457,12 +314,6 @@ void MainScene::UpdateGame(float deltaTime) {
         BeginState(StateTitle);
     }
 
-    float rate = life / lifeMax;
-    Rect rect = bgSprites[bgUILifeGauge]->getTextureRect();
-    float wide = bgSprites[bgUILifeGauge]->getTexture()->getPixelsWide();
-    rect.size.width = wide * rate;
-    bgSprites[bgUILifeGauge]->setTextureRect(rect);
-
     static float snowSec = 0;
     if(snowSec > 5) {
         snowLayer->Setting(Point(-640 / utRand(1, 8), -1136 / utRand(2, 16)), utRand(0.1f, 0.001f));
@@ -471,9 +322,10 @@ void MainScene::UpdateGame(float deltaTime) {
     snowSec += deltaTime;
 
     record += deltaTime;
-    char text[64];
-    sprintf(text, "Record Time %0.2f High %02.2f", record, recordTop);
-    scoreLabel->setString(text);
+    uiLayer->SetLifeRate(life / lifeMax);
+    uiLayer->SetDistRate(distProg / distGoal);
+    uiLayer->SetRecordTime(record, recordTop);
+    uiLayer->Update(deltaTime);
 }
 
 void MainScene::menuCloseCallback(Object* pSender)
@@ -509,6 +361,8 @@ void MainScene::BeginState(State state_) {
         break;
     case StateResult:
         break;
+        default:
+            break;
     }
 
     switch(state = state_) {
@@ -528,6 +382,8 @@ void MainScene::BeginState(State state_) {
         break;
     case StateResult:
         break;
+        default:
+            break;
     }
 }
 

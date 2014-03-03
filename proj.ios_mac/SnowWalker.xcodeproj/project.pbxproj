@@ -86,6 +86,8 @@
 		DD9BE75A18B831DC0063DE4D /* SnowWalkerLifeFrame.png in Resources */ = {isa = PBXBuildFile; fileRef = DD9BE75718B831DC0063DE4D /* SnowWalkerLifeFrame.png */; };
 		DD9BE75B18B831DC0063DE4D /* SnowWalkerLifeGauge.png in Resources */ = {isa = PBXBuildFile; fileRef = DD9BE75818B831DC0063DE4D /* SnowWalkerLifeGauge.png */; };
 		DD9BE75C18B831DC0063DE4D /* SnowWalkerLifeWarning.png in Resources */ = {isa = PBXBuildFile; fileRef = DD9BE75918B831DC0063DE4D /* SnowWalkerLifeWarning.png */; };
+		DDAFB4DA18C1CD7F0079A5F1 /* StageLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDAFB4D818C1CD7F0079A5F1 /* StageLayer.cpp */; };
+		DDAFB4E318C440530079A5F1 /* UILayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDAFB4E118C440530079A5F1 /* UILayer.cpp */; };
 		DDC435C318BF8B1D001E803A /* SnowWalkerProgress.png in Resources */ = {isa = PBXBuildFile; fileRef = DDC435C118BF8B1D001E803A /* SnowWalkerProgress.png */; };
 		DDC435C418BF8B1D001E803A /* SnowWalkerProgressIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DDC435C218BF8B1D001E803A /* SnowWalkerProgressIcon.png */; };
 		DDF0F35D18B66EFA007B533E /* SnowWalker.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF0F35C18B66EFA007B533E /* SnowWalker.png */; };
@@ -334,6 +336,11 @@
 		DD9BE75718B831DC0063DE4D /* SnowWalkerLifeFrame.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerLifeFrame.png; sourceTree = "<group>"; };
 		DD9BE75818B831DC0063DE4D /* SnowWalkerLifeGauge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerLifeGauge.png; sourceTree = "<group>"; };
 		DD9BE75918B831DC0063DE4D /* SnowWalkerLifeWarning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerLifeWarning.png; sourceTree = "<group>"; };
+		DDAFB4D818C1CD7F0079A5F1 /* StageLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StageLayer.cpp; path = ../Classes/StageLayer.cpp; sourceTree = "<group>"; };
+		DDAFB4D918C1CD7F0079A5F1 /* StageLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StageLayer.h; path = ../Classes/StageLayer.h; sourceTree = "<group>"; };
+		DDAFB4E118C440530079A5F1 /* UILayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UILayer.cpp; path = ../Classes/UILayer.cpp; sourceTree = "<group>"; };
+		DDAFB4E218C440530079A5F1 /* UILayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UILayer.h; path = ../Classes/UILayer.h; sourceTree = "<group>"; };
+		DDAFB4E418C465210079A5F1 /* Define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Define.h; path = ../Classes/Define.h; sourceTree = "<group>"; };
 		DDC435C118BF8B1D001E803A /* SnowWalkerProgress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerProgress.png; sourceTree = "<group>"; };
 		DDC435C218BF8B1D001E803A /* SnowWalkerProgressIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerProgressIcon.png; sourceTree = "<group>"; };
 		DDF0F35C18B66EFA007B533E /* SnowWalker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalker.png; sourceTree = "<group>"; };
@@ -406,6 +413,11 @@
 		15AA9C4015B7EC450033D6C2 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				DDAFB4E418C465210079A5F1 /* Define.h */,
+				DDAFB4E118C440530079A5F1 /* UILayer.cpp */,
+				DDAFB4E218C440530079A5F1 /* UILayer.h */,
+				DDAFB4D818C1CD7F0079A5F1 /* StageLayer.cpp */,
+				DDAFB4D918C1CD7F0079A5F1 /* StageLayer.h */,
 				1AFAF8B316D35DE700DB1158 /* AppDelegate.cpp */,
 				1AFAF8B416D35DE700DB1158 /* AppDelegate.h */,
 				1AFAF8B516D35DE700DB1158 /* MainScene.cpp */,
@@ -814,8 +826,10 @@
 				503AE10217EB989F00D1A890 /* RootViewController.mm in Sources */,
 				DD47044718BBA5EB00C45191 /* SnowLayer.cpp in Sources */,
 				1AFAF8B716D35DE700DB1158 /* AppDelegate.cpp in Sources */,
+				DDAFB4DA18C1CD7F0079A5F1 /* StageLayer.cpp in Sources */,
 				503AE10117EB989F00D1A890 /* main.m in Sources */,
 				1AFAF8B816D35DE700DB1158 /* MainScene.cpp in Sources */,
+				DDAFB4E318C440530079A5F1 /* UILayer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

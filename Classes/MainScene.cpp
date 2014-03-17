@@ -1,7 +1,7 @@
 #include "MainScene.h"
 #include "UILayer.h"
 #include "SnowLayer.h"
-#include "StageLayer.h"
+#include "StageManager.h"
 #include "Utility.h"
 
 USING_NS_CC;
@@ -28,6 +28,31 @@ float scrlSpd = 240;
 
 MainScene* MainScene::instance = NULL;
 
+namespace {
+    struct LevelData {
+        enum Type {
+            Snow,
+            Num
+        } type;
+        float appearSec;
+        float repeatSec;
+        Point vector;  // 方向
+    } const levelDatas[] = {
+/*        
+        { LevelData::Snow, 5, 0.001f, Point(-880, -960) },
+        { LevelData::Snow, 8, 0.2f, Point(-640, -960) },
+        { LevelData::Snow, 10, 0.5f, Point(0, -960) },
+        { LevelData::Snow, 15, 2.1f, Point(-320, -960) },
+        { LevelData::Snow, 18, 0.1f, Point(-320, -960) },
+*/
+        { LevelData::Num }
+    };
+
+    float dmgBySnowSpd = 320;
+    float recoverProgTime = 1;
+    float recoverBaseValue = 30;
+}
+
 // on "init" you need to initialize your instance
 bool MainScene::init()
 {
@@ -42,15 +67,23 @@ bool MainScene::init()
 
     srand((unsigned int)time(NULL));
     
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Point origin = Director::getInstance()->getVisibleOrigin();
-
     recordTop = 0;
     record = 0;
+
+    levelIndex = 0;
+
+    debugMenu = NULL;
+    debugSnowFallSpeed = -960;
+    debugSnowMoveSpeed = 0;
+    debugSnowRepeatSec = 0.01f;
 
     life = life1st;
 
     touchType = touch::None;
+
+    recoverLife = 0;
+    recoveredLife = 0;
+    recoverSecCount = 0;
 
     scrlRate = 1;
 
@@ -60,42 +93,24 @@ bool MainScene::init()
     iceAppSecCount = 0;
     iceAppSec = iceAppSecMin + (iceAppSecMax - iceAppSecMin) * utRand(1.f);
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
-
-    // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(MainScene::menuCloseCallback, this));
-    
-	closeItem->setPosition(Point(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Point::ZERO);
-    this->addChild(menu, 1);
 
     // ステージの生成
-    stageLayer = StageLayer::create();
-    this->addChild(stageLayer, 20);
+    stageManager = new StageManager();
 
     // プレイヤーの生成
     playerSprite = Sprite::create("SnowWalkerPlayer.png");
     playerSprite->setAnchorPoint(Point(0.5f,0));
     playerSprite->setPosition(Point(320, plHeight));
-    this->addChild(playerSprite, 30);
+    this->addChild(playerSprite, layer::player);
 
     // 降雪の生成
     snowLayer = SnowLayer::create();
-    this->addChild(snowLayer, 40);
+    this->addChild(snowLayer, layer::snow);
     snowLayer->Setting(Point(-640 / 3, -1136 / 2), 0.01f);
 
     // UIの生成
     uiLayer = UILayer::create();
-    this->addChild(uiLayer, 50);
+    this->addChild(uiLayer, layer::snow);
 
     schedule(schedule_selector(MainScene::Update));
 
@@ -122,7 +137,18 @@ bool MainScene::init()
 
     // 描画用ノードの作成
     debugDrawNode = DrawNode::create();
-    this->addChild(debugDrawNode, 100);
+    this->addChild(debugDrawNode, layer::debug);
+
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+    Point origin = Director::getInstance()->getVisibleOrigin();
+    
+    // position the label on the center of the screen
+    debugInfo = LabelTTF::create("debug", "Arial", 24);
+    debugInfo->setPosition(Point(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 8 * 7 ));
+    debugInfo->setColor(Color3B::RED);
+
+    // add the label as a child to this layer
+    this->addChild(debugInfo, layer::debug);
 
     BeginState(StateTitle);
 
@@ -149,7 +175,6 @@ void MainScene::onTouches(const Touches& touches, Event* event, touch::Type type
 
 void MainScene::Update(float deltaTime) {
     debugDrawNode->clear();
-    snowLayer->Update(deltaTime);
 
     switch(buttonType) {
     case button::Dash:
@@ -160,7 +185,11 @@ void MainScene::Update(float deltaTime) {
         }
         break;
     case button::Drink:
-        life += lifeGainDrink;
+        recoverLife += recoverBaseValue - recoveredLife;
+        recoverSecTotal = recoverProgTime;
+//        recoverSecTotal += recoverProgTime - recoverSecCount;
+        recoveredLife = 0;
+        recoverSecCount = 0;
         break;
             
         default:
@@ -175,16 +204,29 @@ void MainScene::Update(float deltaTime) {
     case StateGame:
         UpdateGame(deltaTime);
         break;
-            
+
+    case StateFailed:
+        UpdateFailed(deltaTime);
+        break;
+
+    case StateDebug:
+        UpdateDebug(deltaTime);
         default:
             break;
     }
 
     touchType = touch::None;
     buttonType = button::None;
+
+    uiLayer->Update(deltaTime);
+    snowLayer->Update(deltaTime);
+    stageManager->Update(deltaTime);
 }
 
 void MainScene::UpdateTitle(float deltaTime) {
+    if(debugMenu != NULL)
+        return;
+
     if(touchType == touch::Began)
         BeginState(StateGame);
 }
@@ -195,8 +237,7 @@ void MainScene::UpdateGame(float deltaTime) {
 
     distProg += scrlSpd * scrlRate * deltaTime * (1/64.f);
 
-    stageLayer->SetScrollSpeed(scrlRate);
-    stageLayer->Update(deltaTime);
+    stageManager->SetScrollSpeed(scrlSpd * scrlRate);
 
     debugDrawNode->drawDot(plColliPos, 32, Color4F(0,1,0,0.5f));
     playerSprite->setPosition(plPos);
@@ -247,7 +288,7 @@ void MainScene::UpdateGame(float deltaTime) {
         sprite->retain();
         sprite->setAnchorPoint(Point(0.5f, 0));
         sprite->setPosition(Point(640 + 320, plHeight));
-        addChild(sprite);
+        addChild(sprite, layer::object);
         snowManSprites.push_back(sprite);
     }
 
@@ -283,7 +324,7 @@ void MainScene::UpdateGame(float deltaTime) {
         Sprite *sprite = Sprite::create("SnowWalkerIce.png");
         sprite->retain();
         sprite->setPosition(Point(640 + 320, plHeight));
-        addChild(sprite);
+        addChild(sprite, layer::object);
         iceSprites.push_back(sprite);
     }
 
@@ -296,36 +337,78 @@ void MainScene::UpdateGame(float deltaTime) {
         jumpSpeed = 0;
     }
 
+    float snowSpeed = snowLayer->GetMoveSpeed();
+    float dmgRate = snowSpeed * (1 / dmgBySnowSpd);
+
     switch(buttonType) {
     case button::Slow:
         scrlRate = 0.5f;
-        life -= lifeDownWalk * deltaTime;
+        life -= lifeDownWalk * dmgRate * deltaTime;
         break; 
     default:
         scrlRate += (1.f - scrlRate) * deltaTime;
-        life -= lifeDownWalk * deltaTime;
+        life -= lifeDownWalk * dmgRate * deltaTime;
         break;
     }
     if(life > dranker) {
         life += lifeGain * deltaTime;
     }
 
-    if(life < 0 || life > lifeMax || hit) {
-        BeginState(StateTitle);
+    if(recoverLife > 0) {        
+        recoverSecCount += deltaTime;
+        int recoverLifePrev = recoveredLife;
+        float rate = 1;
+
+        if(recoverSecCount < recoverSecTotal) {
+            rate = recoverSecCount / recoverSecTotal;
+            rate = sinf(3.14f / 2 * rate);
+            recoveredLife = recoverLife * rate;
+            life += recoveredLife - recoverLifePrev;
+        }
+        else {
+            life += recoverLife - recoverLifePrev;
+            recoverLife = 0;
+            recoveredLife = 0;
+            recoverSecCount = 0;
+            recoverSecTotal = 0;
+        }
     }
 
-    static float snowSec = 0;
-    if(snowSec > 5) {
-        snowLayer->Setting(Point(-640 / utRand(1, 8), -1136 / utRand(2, 16)), utRand(0.1f, 0.001f));
-            snowSec = 0;
+    char debugText[128];
+    sprintf(debugText, "recLife %d recedLife %d \n recSecCnt %.2f recSecTtl %.2f", 
+            recoverLife, recoveredLife, recoverSecCount, recoverSecTotal);
+    debugInfo->setString(debugText);
+
+    if(life < 0 || life > lifeMax || hit) {
+        stageManager->SetScrollSpeed(0);
+        BeginState(StateFailed);
     }
-    snowSec += deltaTime;
+
+    const LevelData& levelData = levelDatas[levelIndex];
+    if(levelData.type != LevelData::Num && record > levelData.appearSec) {
+        snowLayer->Setting(levelData.vector, levelData.repeatSec);
+        levelIndex++;
+    }
 
     record += deltaTime;
     uiLayer->SetLifeRate(life / lifeMax);
     uiLayer->SetDistRate(distProg / distGoal);
     uiLayer->SetRecordTime(record, recordTop);
-    uiLayer->Update(deltaTime);
+}
+
+void MainScene::UpdateFailed(float deltaTime) {
+    if(touchType == touch::Began) {
+        stageManager->Initialize();
+        BeginState(StateTitle);
+    }
+}
+
+void MainScene::UpdateDebug(float deltaTime) {
+    char debugText[128];
+    sprintf(debugText, "snow spd.x %.2f y %.2f \n repeat %.2f num %d", 
+            debugSnowMoveSpeed, debugSnowFallSpeed, 
+            debugSnowRepeatSec, snowLayer->GetSnowFrakes());
+    debugInfo->setString(debugText);
 }
 
 void MainScene::menuCloseCallback(Object* pSender)
@@ -346,6 +429,7 @@ void MainScene::BeginState(State state_) {
     case StateTitle:
         break;
     case StateGame:
+        snowLayer->Initialize();
         for(std::vector<Sprite*>::iterator itr = snowManSprites.begin();
             itr != snowManSprites.end(); itr = snowManSprites.erase(itr))
         {
@@ -361,16 +445,32 @@ void MainScene::BeginState(State state_) {
         break;
     case StateResult:
         break;
-        default:
-            break;
+    case StateDebug:
+        removeChild(debugMenu, true);
+        break;
+    default:
+        break;
     }
 
+    ValueVector items;
     switch(state = state_) {
     case StateInit:
         break;
     case StateLogo:
         break;
     case StateTitle:
+        levelIndex = 0;
+        recoverLife = 0;
+        recoveredLife = 0;
+        recoverSecCount = 0;
+        recoverSecTotal = 0;
+
+        CreateDebugMenu(
+            MenuItemFont::create("Start", [](Object* sender) { Get()->BeginState(StateGame); }),
+            MenuItemFont::create("Debug", [](Object* sender) { Get()->BeginState(StateDebug); }),
+            NULL
+        );
+
         life = life1st;
         if(record > recordTop)
             recordTop = record;
@@ -382,12 +482,41 @@ void MainScene::BeginState(State state_) {
         break;
     case StateResult:
         break;
-        default:
-            break;
+    case StateDebug:
+        CreateDebugMenu(
+            MenuItemFont::create("snow spd.x--", [](Object* sender) { Get()->debugSnowMoveSpeed -= 32; Get()->DebugFallSnow(); }),
+            MenuItemFont::create("snow spd.x++", [](Object* sender) { Get()->debugSnowMoveSpeed += 32; Get()->DebugFallSnow(); }),
+            MenuItemFont::create("snow spd.y--", [](Object* sender) { Get()->debugSnowFallSpeed -= 32; Get()->DebugFallSnow(); }),
+            MenuItemFont::create("snow spd.y++", [](Object* sender) { Get()->debugSnowFallSpeed += 32; Get()->DebugFallSnow(); }),
+            MenuItemFont::create("snow repeat--", [](Object* sender) { Get()->debugSnowRepeatSec += 0.001f; Get()->DebugFallSnow(); }),
+            MenuItemFont::create("snow repeat++", [](Object* sender) { Get()->debugSnowRepeatSec -= 0.001f; Get()->DebugFallSnow(); }),
+            NULL
+        );
+        break;
+    default:
+        break;
     }
 }
 
-void MainScene::SetScrlRate(float scrlRate_) { 
-    scrlRate = scrlRate_; 
-    life -= lifeDownDash;
+void MainScene::CreateDebugMenu(MenuItem* item, ...) {
+    va_list args;
+    va_start(args,item);
+    
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+    Point origin = Director::getInstance()->getVisibleOrigin();
+    Point pos(origin.x + visibleSize.width/2, origin.y + visibleSize.height/2);
+
+    if(debugMenu != NULL)
+        this->removeChild(debugMenu, true);
+    debugMenu = Menu::createWithItems(item, args);
+    debugMenu->alignItemsVerticallyWithPadding(32);
+    debugMenu->setPosition(pos);
+    debugMenu->setColor(Color3B::RED);
+    this->addChild(debugMenu, layer::debug);
+    
+    va_end(args);    
+}
+
+void MainScene::DebugFallSnow() {
+    snowLayer->Setting(Point(debugSnowMoveSpeed, debugSnowFallSpeed), debugSnowRepeatSec);    
 }

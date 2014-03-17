@@ -447,7 +447,7 @@ void Menu::alignItemsInRowsWithArray(const ValueVector& columns)
     int rowsOccupied = 0;
     int columnRows;
 
-    for(const auto &child : _children) {
+    for(const auto &child : _children) {    
         // check if too many menu items for the amount of rows/columns
         CCASSERT(column < columns.size(), "");
 

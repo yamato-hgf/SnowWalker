@@ -11,23 +11,17 @@
 
 #include "cocos2d.h"
 
-class StageLayer : public cocos2d::Layer
+class StageManager
 {
 public:
+    StageManager();
 
-    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
-    
-    // implement the "static create()" method manually
-    CREATE_FUNC(StageLayer);
+    void Initialize();
 
     void Update(float deltaTime);
  
-    void onEnter();
-    void onExit();
-
-    void SetScrollSpeed(float scrlRate_) {
-    	scrlRate = scrlRate_;
+    void SetScrollSpeed(float scrlSpd_) {
+    	scrlSpd = scrlSpd_;
     };
 
 private:
@@ -39,12 +33,14 @@ private:
         bgRiver,
         bgBank,
         bgField,
+        bgBuilding,
+        bgDoorLight,
         bgNum
     };
 
     cocos2d::Sprite* bgSprites[bgNum];
 
-    float scrlRate;
+    float scrlSpd;
 };
 
 #endif /* defined(__SnowWalker__StageLayer__) */

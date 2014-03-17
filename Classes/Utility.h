@@ -17,7 +17,7 @@ inline int utRand(int rangeMin, int rangeMax) {
     return rangeMin + (rand() % ((rangeMax - rangeMin) * 100)) / 100;
 }
 
-inline float utRand(float range) {
+inline float utRand(float range = 1.0f) {
     return range * rand() / RAND_MAX;
 }
 

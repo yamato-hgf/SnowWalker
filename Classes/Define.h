@@ -28,4 +28,18 @@ namespace button {
 	};
 }
 
+// レイヤー
+namespace layer {
+	enum Type {
+		bgBack,
+		player,
+		object,
+		bgFront,
+		snow,
+		ui,
+		debug,
+        Num
+	};
+}
+
 #endif

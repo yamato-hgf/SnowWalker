@@ -21,9 +21,11 @@ public:
     // implement the "static create()" method manually
     CREATE_FUNC(SnowLayer);
 
+    void Initialize();
     void Update(float deltaTime);
     void Setting(cocos2d::Point speed, float appearInterval);
     void Move(cocos2d::Point vector);
+    float GetMoveSpeed() { return speedSetting.getLength(); }
 
 private:
 	struct SnowController {
@@ -41,6 +43,9 @@ private:
 	float appearIntervalSetting;
 
 	float appearSecCount;
+
+public: // debug
+	int GetSnowFrakes() { return snowCtrls.size(); }
 };
 
 #endif /* defined(__SnowWalker__SnowLayer__) */

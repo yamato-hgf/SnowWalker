@@ -86,8 +86,10 @@
 		DD9BE75A18B831DC0063DE4D /* SnowWalkerLifeFrame.png in Resources */ = {isa = PBXBuildFile; fileRef = DD9BE75718B831DC0063DE4D /* SnowWalkerLifeFrame.png */; };
 		DD9BE75B18B831DC0063DE4D /* SnowWalkerLifeGauge.png in Resources */ = {isa = PBXBuildFile; fileRef = DD9BE75818B831DC0063DE4D /* SnowWalkerLifeGauge.png */; };
 		DD9BE75C18B831DC0063DE4D /* SnowWalkerLifeWarning.png in Resources */ = {isa = PBXBuildFile; fileRef = DD9BE75918B831DC0063DE4D /* SnowWalkerLifeWarning.png */; };
-		DDAFB4DA18C1CD7F0079A5F1 /* StageLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDAFB4D818C1CD7F0079A5F1 /* StageLayer.cpp */; };
+		DDAFB4DA18C1CD7F0079A5F1 /* StageManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDAFB4D818C1CD7F0079A5F1 /* StageManager.cpp */; };
 		DDAFB4E318C440530079A5F1 /* UILayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDAFB4E118C440530079A5F1 /* UILayer.cpp */; };
+		DDAFB4E718C478850079A5F1 /* SnowWalkerBuilding.png in Resources */ = {isa = PBXBuildFile; fileRef = DDAFB4E518C478850079A5F1 /* SnowWalkerBuilding.png */; };
+		DDAFB4E818C478850079A5F1 /* SnowWalkerDoorLight.png in Resources */ = {isa = PBXBuildFile; fileRef = DDAFB4E618C478850079A5F1 /* SnowWalkerDoorLight.png */; };
 		DDC435C318BF8B1D001E803A /* SnowWalkerProgress.png in Resources */ = {isa = PBXBuildFile; fileRef = DDC435C118BF8B1D001E803A /* SnowWalkerProgress.png */; };
 		DDC435C418BF8B1D001E803A /* SnowWalkerProgressIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DDC435C218BF8B1D001E803A /* SnowWalkerProgressIcon.png */; };
 		DDF0F35D18B66EFA007B533E /* SnowWalker.png in Resources */ = {isa = PBXBuildFile; fileRef = DDF0F35C18B66EFA007B533E /* SnowWalker.png */; };
@@ -336,11 +338,13 @@
 		DD9BE75718B831DC0063DE4D /* SnowWalkerLifeFrame.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerLifeFrame.png; sourceTree = "<group>"; };
 		DD9BE75818B831DC0063DE4D /* SnowWalkerLifeGauge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerLifeGauge.png; sourceTree = "<group>"; };
 		DD9BE75918B831DC0063DE4D /* SnowWalkerLifeWarning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerLifeWarning.png; sourceTree = "<group>"; };
-		DDAFB4D818C1CD7F0079A5F1 /* StageLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StageLayer.cpp; path = ../Classes/StageLayer.cpp; sourceTree = "<group>"; };
-		DDAFB4D918C1CD7F0079A5F1 /* StageLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StageLayer.h; path = ../Classes/StageLayer.h; sourceTree = "<group>"; };
+		DDAFB4D818C1CD7F0079A5F1 /* StageManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StageManager.cpp; path = ../Classes/StageManager.cpp; sourceTree = "<group>"; };
+		DDAFB4D918C1CD7F0079A5F1 /* StageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StageManager.h; path = ../Classes/StageManager.h; sourceTree = "<group>"; };
 		DDAFB4E118C440530079A5F1 /* UILayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UILayer.cpp; path = ../Classes/UILayer.cpp; sourceTree = "<group>"; };
 		DDAFB4E218C440530079A5F1 /* UILayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UILayer.h; path = ../Classes/UILayer.h; sourceTree = "<group>"; };
 		DDAFB4E418C465210079A5F1 /* Define.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Define.h; path = ../Classes/Define.h; sourceTree = "<group>"; };
+		DDAFB4E518C478850079A5F1 /* SnowWalkerBuilding.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerBuilding.png; sourceTree = "<group>"; };
+		DDAFB4E618C478850079A5F1 /* SnowWalkerDoorLight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerDoorLight.png; sourceTree = "<group>"; };
 		DDC435C118BF8B1D001E803A /* SnowWalkerProgress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerProgress.png; sourceTree = "<group>"; };
 		DDC435C218BF8B1D001E803A /* SnowWalkerProgressIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalkerProgressIcon.png; sourceTree = "<group>"; };
 		DDF0F35C18B66EFA007B533E /* SnowWalker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SnowWalker.png; sourceTree = "<group>"; };
@@ -416,8 +420,8 @@
 				DDAFB4E418C465210079A5F1 /* Define.h */,
 				DDAFB4E118C440530079A5F1 /* UILayer.cpp */,
 				DDAFB4E218C440530079A5F1 /* UILayer.h */,
-				DDAFB4D818C1CD7F0079A5F1 /* StageLayer.cpp */,
-				DDAFB4D918C1CD7F0079A5F1 /* StageLayer.h */,
+				DDAFB4D818C1CD7F0079A5F1 /* StageManager.cpp */,
+				DDAFB4D918C1CD7F0079A5F1 /* StageManager.h */,
 				1AFAF8B316D35DE700DB1158 /* AppDelegate.cpp */,
 				1AFAF8B416D35DE700DB1158 /* AppDelegate.h */,
 				1AFAF8B516D35DE700DB1158 /* MainScene.cpp */,
@@ -544,6 +548,8 @@
 		78C7DDAA14EBA5050085D0C2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				DDAFB4E518C478850079A5F1 /* SnowWalkerBuilding.png */,
+				DDAFB4E618C478850079A5F1 /* SnowWalkerDoorLight.png */,
 				DDC435C118BF8B1D001E803A /* SnowWalkerProgress.png */,
 				DDC435C218BF8B1D001E803A /* SnowWalkerProgressIcon.png */,
 				DD47043D18BB945800C45191 /* SnowWalkerSnows.png */,
@@ -766,6 +772,7 @@
 				DD9BE74D18B7AE8B0063DE4D /* SnowWalkerCloudFront.png in Resources */,
 				DD47043518BA53AF00C45191 /* SnowWalkerIce.png in Resources */,
 				DD9BE75618B7B12D0063DE4D /* SnowWalkerRiver.png in Resources */,
+				DDAFB4E818C478850079A5F1 /* SnowWalkerDoorLight.png in Resources */,
 				5087E78117EB970100C73F5D /* Icon-120.png in Resources */,
 				DDC435C318BF8B1D001E803A /* SnowWalkerProgress.png in Resources */,
 				5087E78617EB970100C73F5D /* Icon-76.png in Resources */,
@@ -799,6 +806,7 @@
 				50EF629817ECD46A001EB2F8 /* Icon-80.png in Resources */,
 				DD9BE75118B7AE8B0063DE4D /* SnowWalkerSky.png in Resources */,
 				5087E78417EB970100C73F5D /* Icon-57.png in Resources */,
+				DDAFB4E718C478850079A5F1 /* SnowWalkerBuilding.png in Resources */,
 				5087E77E17EB970100C73F5D /* Default.png in Resources */,
 				50EF629717ECD46A001EB2F8 /* Icon-58.png in Resources */,
 			);
@@ -826,7 +834,7 @@
 				503AE10217EB989F00D1A890 /* RootViewController.mm in Sources */,
 				DD47044718BBA5EB00C45191 /* SnowLayer.cpp in Sources */,
 				1AFAF8B716D35DE700DB1158 /* AppDelegate.cpp in Sources */,
-				DDAFB4DA18C1CD7F0079A5F1 /* StageLayer.cpp in Sources */,
+				DDAFB4DA18C1CD7F0079A5F1 /* StageManager.cpp in Sources */,
 				503AE10117EB989F00D1A890 /* main.m in Sources */,
 				1AFAF8B816D35DE700DB1158 /* MainScene.cpp in Sources */,
 				DDAFB4E318C440530079A5F1 /* UILayer.cpp in Sources */,
@@ -902,6 +910,7 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"ADDITIONAL_SDKS[arch=*]" = "";
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -924,10 +933,10 @@
 					"$(SRCROOT)/../cocos2d/cocos/2d/platform/ios/Simulation",
 				);
 				INFOPLIST_FILE = ios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos7.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 			};
@@ -936,6 +945,7 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"ADDITIONAL_SDKS[arch=*]" = "";
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -956,10 +966,10 @@
 					"$(SRCROOT)/../cocos2d/cocos/2d/platform/ios/Simulation",
 				);
 				INFOPLIST_FILE = ios/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "";
 				PROVISIONING_PROFILE = "";
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos7.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 			};

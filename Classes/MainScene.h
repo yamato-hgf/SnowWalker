@@ -7,7 +7,7 @@
 
 class UILayer;
 class SnowLayer;
-class StageLayer;
+class StageManager;
 
 typedef std::vector<cocos2d::Touch*> Touches;
 
@@ -25,8 +25,6 @@ public:
 
     static MainScene* const Get() { return instance; }
 
-    void SetScrlRate(float scrlRate_);
-
     void onTouches(const Touches& touches, cocos2d::Event* event, touch::Type type);
 
 private:    // methods
@@ -37,6 +35,7 @@ private:    // methods
         StateGame,
         StateFailed,
         StateResult,
+        StateDebug,
         StateNum
     };
     
@@ -46,9 +45,13 @@ private:    // methods
     void Update(float deltaTime);
     void UpdateTitle(float deltaTime);
     void UpdateGame(float deltaTime);
+    void UpdateFailed(float deltaTime);
+    void UpdateDebug(float deltaTime);
 
     void BeginState(State state_);
     State const GetState() { return state; }
+
+    void CreateDebugMenu(cocos2d::MenuItem* item, ...);
 
 private:
     static MainScene* instance;
@@ -62,7 +65,7 @@ private:
     std::vector<cocos2d::Sprite*> iceSprites;
     UILayer* uiLayer;
     SnowLayer* snowLayer;
-    StageLayer* stageLayer;
+    StageManager* stageManager;
 
     float record;
     float recordTop;
@@ -80,7 +83,21 @@ private:
     float plPosY;
     float jumpSpeed;
 
-private:    // debug
+    float recoverSecCount;
+    float recoverSecTotal;
+    int recoverLife;
+    int recoveredLife;
+    int levelIndex;
+
+public:    // debug
+    void DebugFallSnow();
+
+    float debugSnowFallSpeed;
+    float debugSnowMoveSpeed;
+    float debugSnowRepeatSec;
+
+    cocos2d::LabelTTF* debugInfo;
+    cocos2d::Menu* debugMenu;
     cocos2d::DrawNode* debugDrawNode;
 };
 

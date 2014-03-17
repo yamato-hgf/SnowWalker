@@ -68,7 +68,7 @@ bool UILayer::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    scoreLabel = LabelTTF::create("Hello World", "Arial", 24);
+    scoreLabel = LabelTTF::create("Score", "Arial", 24);
     
     // position the label on the center of the screen
     scoreLabel->setPosition(Point(origin.x + visibleSize.width/2,
